@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { load as yamlLoad, dump as yamlDump } from "js-yaml";
 import { YamlEditor } from "@/components/yaml-editor";
 import { MergeDialog } from "@/components/merge-dialog";
+import { TemplateSelector } from "@/components/template-selector";
 
 export default function Home() {
   const [subscriptionUrl, setSubscriptionUrl] = useState("");
@@ -21,14 +22,27 @@ export default function Home() {
 
   const downloadYaml = async () => {
     try {
-      const response = await fetch(subscriptionUrl);
-      const text = await response.text();
-      setYamlContent(text);
+      const response = await fetch("/api/sub", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: subscriptionUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download YAML");
+      }
+
+      const data = await response.text();
+      setYamlContent(data);
+
       toast({
         title: "Success",
         description: "YAML file downloaded successfully",
       });
     } catch (error) {
+      console.error("Error:", error);
       toast({
         title: "Error",
         description: "Failed to download YAML file",
@@ -118,11 +132,17 @@ export default function Home() {
               value={yamlContent}
               onChange={setYamlContent}
             />
-            <YamlEditor
-              title="Template Editor"
-              value={templateContent}
-              onChange={setTemplateContent}
-            />
+            <div className="space-y-4">
+              <TemplateSelector
+                onTemplateSelect={setTemplateContent}
+                currentTemplate={templateContent}
+              />
+              <YamlEditor
+                title="Template Editor"
+                value={templateContent}
+                onChange={setTemplateContent}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-4">
