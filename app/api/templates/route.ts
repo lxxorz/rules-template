@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { promises as fs } from 'fs';
 import path from 'path';
 
-// Configure route for static export
 export const dynamic = 'force-static';
 
 export async function GET() {
@@ -25,7 +24,6 @@ export async function GET() {
           };
         })
     );
-    console.log(builtInTemplate);
     return NextResponse.json({
       builtIn: builtInTemplate,
       custom: customTemplates

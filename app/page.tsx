@@ -22,7 +22,7 @@ export default function Home() {
 
   const downloadYaml = async () => {
     try {
-      const response = await fetch("/api/sub", {
+      const response = await fetch(`/api/sub`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
